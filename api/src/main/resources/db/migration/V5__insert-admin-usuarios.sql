@@ -1,0 +1,1 @@
+insert into usuarios values(1, 'admin','$2a$12$P1viRxOn3O407sL2.XsgtuKCpYqfcOGDS/nNL/hnuCZE2AIedbayi');

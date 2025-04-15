@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import jakarta.validation.Valid;
 import med.voll.api.domain.consulta.model.Consulta;
 import med.voll.api.domain.consulta.record.DadosAgendamentoConsulta;
+import med.voll.api.domain.consulta.record.DadosDetalhamentoConsulta;
 import med.voll.api.domain.consulta.repository.ConsultaRepository;
 import med.voll.api.domain.medico.model.Medico;
 import med.voll.api.domain.medico.repository.MedicoRepository;
@@ -25,7 +26,7 @@ public class AgendaDeConsultas {
 	@Autowired
 	PacienteRepository pacienteRepository;
 	
-	public void agendar(@Valid DadosAgendamentoConsulta dados) {
+	public DadosDetalhamentoConsulta agendar(@Valid DadosAgendamentoConsulta dados) {
 		
 		if(!pacienteRepository.existsById(dados.idPaciente())) {
 			throw new ValidacaoException("Paciente não existe");
@@ -33,14 +34,21 @@ public class AgendaDeConsultas {
 		
 		Paciente paciente = pacienteRepository.getReferenceById(dados.idPaciente());
 		
-		if(dados.idMedico() != null && medicoRepository.existsById(dados.idMedico())) {
+		if(dados.idMedico() != null && !medicoRepository.existsById(dados.idMedico())) {
 			throw new ValidacaoException("Médico não existe");
 		}
 		
 		Medico medico = escolherMedico(dados);
 		
+		if(medico == null) {
+			throw new ValidacaoException("Nenhum médico disponível");
+		}
+		
 		Consulta consulta = new Consulta(null, medico, paciente, dados.data());
 		consultaRepository.save(consulta); 
+		
+		return new DadosDetalhamentoConsulta(consulta.getId(),consulta.getMedico().getId(),consulta.getPaciente().getId(),consulta.getData());
+		
 		
 	}
 	

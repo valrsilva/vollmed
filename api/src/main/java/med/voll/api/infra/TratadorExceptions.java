@@ -13,6 +13,11 @@ import jakarta.persistence.EntityNotFoundException;
 @RestControllerAdvice
 public class TratadorExceptions {
 
+	@ExceptionHandler(ValidacaoException.class)
+	public ResponseEntity<?> tratarValidacaoException(ValidacaoException e) {
+		return ResponseEntity.badRequest().body(e.getMessage());
+	}
+	
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<?> tratarErroNotFound() {
 		return ResponseEntity.notFound().build();

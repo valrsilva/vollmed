@@ -28,6 +28,19 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
             limit 1
             """)
 	Medico escolherMedicoAleatorioLivreNaData(Especialidade especialidade, @NotNull @Future LocalDateTime data);
+	
+	@Query("""
+            select m from Medico m
+            where
+            m.ativo = true
+            and m.especialidade = :especialidade
+            and m.id not in (
+				select c.medico.id from Consulta c
+            )
+            order by rand()
+            limit 1
+            """)
+	Medico escolherMedicoAleatorioLivreNaData(Especialidade especialidade);
 
 	@Query("""
             select m.ativo 
